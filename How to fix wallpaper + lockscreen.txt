@@ -1,0 +1,41 @@
+# Hello… To fix the wallpaper and the lockscreen run powershell as admin, then copy paste all of this code there... 
+# then enter...and restart your PC, and next go to the post and beg for mercy becasue of being such a dumb clickslut that loves to run dangerous stuff.. <3
+
+# Rutas de las políticas modificadas
+$policyPathLockScreen = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
+$policyControlPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control PanelDesktop"
+
+# Eliminar claves relacionadas con la pantalla de bloqueo
+Remove-Item -Path $policyPathLockScreen -Recurse -Force -ErrorAction SilentlyContinue
+
+# Eliminar claves relacionadas con el fondo de escritorio
+Remove-Item -Path $policyControlPath -Recurse -Force -ErrorAction SilentlyContinue
+
+# Forzar actualización de políticas
+Start-Process -FilePath "gpupdate.exe" -ArgumentList "/force" -Wait
+
+Write-Host "Configuraciones revertidas. Ahora puedes personalizar la pantalla de bloqueo manualmente."
+
+# ----------------------------------------------------------------------------------------------------
+
+# Eliminar la imagen de fondo establecida
+$wallpaperPath = "C:\Users\Public\Pictures\wallpaper.jpg"
+
+# Restablecer el fondo de pantalla a la configuración predeterminada
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value ""
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value 0
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name TileWallpaper -Value 0
+
+# Habilitar cambios en el fondo de pantalla
+Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop" -Force -ErrorAction SilentlyContinue
+
+# Aplicar los cambios inmediatamente
+rundll32.exe user32.dll, UpdatePerUserSystemParameters
+
+# Eliminar la imagen descargada (opcional)
+if (Test-Path $wallpaperPath) {
+    Remove-Item $wallpaperPath -Force
+}
+
+Write-Host "Se han revertido los cambios y se restauró la configuración del fondo de pantalla."
